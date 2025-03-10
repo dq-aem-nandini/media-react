@@ -34,11 +34,29 @@ const Portfolio = () => {
     }
   };
 
-  const handleDownload = (src) => {
-    const link = document.createElement("a");
-    link.href = src;
-    link.download = "image.jpg";
-    link.click();
+  // const handleDownload = (src) => {
+  //   const link = document.createElement("a");
+  //   link.href = src;
+  //   link.download = "image.jpg";
+  //   link.click();
+  // };
+  const handleDownload = async (src) => {
+    try {
+      const response = await fetch(src);
+      if (!response.ok) throw new Error("Failed to fetch image");
+  
+      const blob = await response.blob();
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "downloaded-image.jpg"; 
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(link.href); 
+    } catch (error) {
+      console.error("Download failed:", error);
+      alert("Failed to download image. Check CORS restrictions.");
+    }
   };
 
   return (
